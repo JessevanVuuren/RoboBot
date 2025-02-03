@@ -1,32 +1,7 @@
-from dataclasses import dataclass
+from models import *  # type: ignore
 from pyray import *  # type: ignore
 from utilz import *  # type: ignore
 import math
-
-
-@dataclass
-class AxisHitBox:
-    mesh: Mesh
-    offset: Vector3
-    material: Material
-    matrix = matrix_identity()
-
-
-@dataclass
-class AxisControl:
-    hit_box: AxisHitBox
-    control_axis: Vector3
-    hidden_plane_matrix: Matrix
-    ray: RayCollision = RayCollision()
-
-
-@dataclass
-class XYZControl:
-    x: AxisControl
-    y: AxisControl
-    z: AxisControl
-    hidden_plane:Mesh
-    position: Vector3 = vector3_zero()
 
 
 def init_xyz() -> XYZControl:
@@ -83,7 +58,7 @@ def draw_xyz_control(target: Vector3, xyz: XYZControl, camera: Camera3D):
     draw_mesh(xyz.z.hit_box.mesh, xyz.z.hit_box.material, xyz.z.hit_box.matrix)
 
 
-def move_point(point: Vector3, angle: float, ac: AxisControl, camera: Camera3D, xyz:XYZControl) -> Vector3:
+def move_point(point: Vector3, angle: float, ac: AxisControl, camera: Camera3D, xyz: XYZControl) -> Vector3:
     rotate_to_camera = matrix_rotate(ac.control_axis, angle)
     default_rotation = matrix_multiply(ac.hidden_plane_matrix, rotate_to_camera)
     translate_to_point = matrix_multiply(default_rotation, vector3_to_matrix(point))
@@ -93,6 +68,3 @@ def move_point(point: Vector3, angle: float, ac: AxisControl, camera: Camera3D, 
 
     offset = vector3_subtract(ac.ray.point, xyz.position)
     return vector3_subtract(ray.point, offset)
-
-
-

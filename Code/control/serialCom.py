@@ -30,6 +30,7 @@ class SerialCommunicator(threading.Thread):
         self._connector.timeout = 1
 
     def run(self):
+        self._logger.info(f"Start connection loop on port: {self._port}")
         while not self._stop_flag.is_set():
             time.sleep(1)
             if not self.is_connected:

@@ -4,10 +4,9 @@ from link import Link
 
 from xyz_control import *  # type: ignore
 from rcamera import *  # type: ignore
+from read_stl import *  # type: ignore
 from utilz import *  # type: ignore
 from pyray import *  # type: ignore
-
-import math
 
 HEIGHT = 720
 WIDTH = 1280
@@ -25,9 +24,7 @@ camera_start_up = Vector3(0, 1, 0)
 
 camera = Camera3D(camera_start_pos, target, camera_start_up, 30.0, CameraProjection.CAMERA_PERSPECTIVE)
 
-xyz_layer = load_render_texture(WIDTH, HEIGHT)
-world_layer = load_render_texture(WIDTH, HEIGHT)
-ui_layer = load_render_texture(WIDTH, HEIGHT)
+
 
 
 def draw_grid():
@@ -51,14 +48,19 @@ def render():
     begin_texture_mode(world_layer)
     clear_background(get_color(0x181818FF))
     begin_mode_3d(camera)
+    draw_grid()
 
     draw_sphere(point_to_follow, .13, get_color(0xffdd33FF))
     draw_line_3d(vector3_zero(), point_to_follow, get_color(0xFFFFFFFF))
-    draw_grid()
 
-    
     arm.link1.render_link()
     arm.link2.render_link()
+
+    begin_shader_mode(shader)
+    # draw_mesh(boom.body, boom.material, matrix_identity())
+    draw_cube(vector3_zero(), 1, 1, 1, get_color(0xFF0000FF))
+    # draw_cube(vector3_zero(), 1, 1, 1, get_color(0xa2a4a4cc))
+    end_shader_mode()
 
     end_mode_3d()
     end_texture_mode()
@@ -91,10 +93,29 @@ def render():
     end_drawing()
 
 
+xyz_layer = load_render_texture(WIDTH, HEIGHT)
+world_layer = load_render_texture(WIDTH, HEIGHT)
+ui_layer = load_render_texture(WIDTH, HEIGHT)
+
+shader = load_shader("shaders/lighting.vs", "shaders/lighting.fs")
+shader.locs[ShaderLocationIndex.SHADER_LOC_MATRIX_MODEL] = get_shader_location(shader, "model")
+shader.locs[ShaderLocationIndex.SHADER_LOC_MATRIX_VIEW] = get_shader_location(shader, "view")
+shader.locs[ShaderLocationIndex.SHADER_LOC_MATRIX_PROJECTION] = get_shader_location(shader, "projection")
+
+light_position = Vector3(-1.0, -1.0, -1.0)
+light_color = Vector3(1.0, 1.0, 1.0) 
+
+set_shader_value(shader, get_shader_location(shader, "lightPosition"), light_position, ShaderUniformDataType.SHADER_UNIFORM_VEC3)
+set_shader_value(shader, get_shader_location(shader, "lightColor"), light_color, ShaderUniformDataType.SHADER_UNIFORM_VEC3)
+
+
+
 
 SC = SerialCommunicator("COM8", 1000000, 1, ["INFO"])
 SC.start()
 
+# boom = load_stl_mesh("../../3D_models/boom_simple")
+# boom = load_stl_mesh("../test/readSTL/test")
 
 
 point_to_follow = Vector3(0, 3, 5)
@@ -143,17 +164,17 @@ while not window_should_close():
         new_position = move_point(point_to_follow, angle, xyz.z, camera, xyz)
         point_to_follow.z = new_position.z
 
-
     arm.compute_ik(point_to_follow)
+
+    
+    set_shader_value(shader, get_shader_location(shader, "lightPosition"), camera.position, ShaderUniformDataType.SHADER_UNIFORM_VEC3)
 
     angle1 = math.degrees(arm.link1.get_angle())
     angle2 = math.degrees(arm.link2.get_angle())
 
     data_to_write = str(180 - angle1) + "|" + str((angle1 - angle2) * 2) + "|"
-    
+
     SC.write(data_to_write)
-
-
 
     render()
 
