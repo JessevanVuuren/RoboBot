@@ -1,5 +1,10 @@
 from pyray import *  # type: ignore
+from render import ShaderManager
+from typing import Optional
 from link import Link
+from models import *
+from utilz import *
+
 import math
 
 
@@ -8,6 +13,9 @@ class RobotArm2Link:
         self.link_length = link_length
         self.link1 = Link(base_pos, link_length)
         self.link2 = Link(self.link1.end_pos, link_length)
+        self.body_parts:list[RobotPart] = []
+
+        self.yaw = 0
 
     def compute_ik(self, point_to_follow: Vector3):
         end_effector_xz = Vector2(point_to_follow.x, point_to_follow.z)
@@ -28,8 +36,42 @@ class RobotArm2Link:
         angle1 = base_angle + alpha
         angle2 = math.pi - beta
 
+        self.yaw = yaw
+
         self.link1.set_angle_x(angle1)
         self.link1.set_angle_y(-yaw)
         self.link2.set_start_point(self.link1.end_pos)
         self.link2.set_angle_x(angle1 - angle2)
         self.link2.set_angle_y(-yaw)
+
+    def render_bones(self):
+        self.link1.render_link()
+        self.link2.render_link()
+
+    def compute_body(self):
+        for part in self.body_parts:
+            if (not part.link):
+                continue
+
+            anchor_point = part.link.get_body_position()
+
+            anchor_point = matrix_multiply(anchor_point, matrix_rotate_y(self.yaw))
+
+            anchor_point = lock_matrix_position(anchor_point, part.lock_position)
+            anchor_point = lock_matrix_rotation(anchor_point, part.lock_rotation)
+
+            origin = vector3_to_matrix(part.link.start_pos)
+            part_offset = matrix_multiply(part.offset, anchor_point)
+            final_position = matrix_multiply(part_offset, origin)
+
+
+            part.position = final_position
+
+    def render_body(self, shader: Optional[ShaderManager]):
+        for part in self.body_parts:
+
+            if (shader):
+                with shader:
+                    draw_mesh(part.body, part.material, part.position)
+            else:
+                draw_mesh(part.body, part.material, part.position)

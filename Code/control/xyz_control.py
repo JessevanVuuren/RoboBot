@@ -3,17 +3,18 @@ from pyray import *  # type: ignore
 from utilz import *  # type: ignore
 import math
 
+XYZ_SCALE = 15
 
 def init_xyz() -> XYZControl:
-    hidden_plane = gen_mesh_plane(10, 10, 1, 1)
+    hidden_plane = gen_mesh_plane(1000, 1000, 1, 1)
 
-    mesh_x = gen_mesh_cube(1.5, .15, .15)
-    mesh_y = gen_mesh_cube(.15, 1.5, .15)
-    mesh_z = gen_mesh_cube(.15, .15, 1.5)
+    mesh_x = gen_mesh_cube(1.5 * XYZ_SCALE, .15 * XYZ_SCALE, .15 * XYZ_SCALE)
+    mesh_y = gen_mesh_cube(.15 * XYZ_SCALE, 1.5 * XYZ_SCALE, .15 * XYZ_SCALE)
+    mesh_z = gen_mesh_cube(.15 * XYZ_SCALE, .15 * XYZ_SCALE, 1.5 * XYZ_SCALE)
 
-    offset_x = Vector3(.75, 0, 0)
-    offset_y = Vector3(0, .75, 0)
-    offset_z = Vector3(0, 0, .75)
+    offset_x = Vector3(.75 * XYZ_SCALE, 0, 0)
+    offset_y = Vector3(0, .75 * XYZ_SCALE, 0)
+    offset_z = Vector3(0, 0, .75 * XYZ_SCALE)
 
     material_x = load_material_default()
     material_x.maps[0].color = get_color(0xFF3352CC)
@@ -36,13 +37,17 @@ def init_xyz() -> XYZControl:
 
 
 def draw_xyz_control(target: Vector3, xyz: XYZControl, camera: Camera3D):
-    end_pos_x_axis = vector3_add(target, Vector3(1.5, 0, 0))
-    end_pos_y_axis = vector3_add(target, Vector3(0, 1.5, 0))
-    end_pos_z_axis = vector3_add(target, Vector3(0, 0, 1.5))
+    end_pos_x_axis = vector3_add(target, Vector3(1.5 * XYZ_SCALE, 0, 0))
+    end_pos_y_axis = vector3_add(target, Vector3(0, 1.5 * XYZ_SCALE, 0))
+    end_pos_z_axis = vector3_add(target, Vector3(0, 0, 1.5 * XYZ_SCALE))
 
-    draw_cylinder_ex(end_pos_x_axis, Vector3(end_pos_x_axis.x + .5, end_pos_x_axis.y, end_pos_x_axis.z), .1, 0, 30, get_color(0xFF3352ff))
-    draw_cylinder_ex(end_pos_y_axis, Vector3(end_pos_y_axis.x, end_pos_y_axis.y + .5, end_pos_y_axis.z), .1, 0, 30, get_color(0x8BDC00ff))
-    draw_cylinder_ex(end_pos_z_axis, Vector3(end_pos_z_axis.x, end_pos_z_axis.y, end_pos_z_axis.z + .5), .1, 0, 30, get_color(0x2890FFff))
+    cylinder_end_x = Vector3(end_pos_x_axis.x + .5 * XYZ_SCALE, end_pos_x_axis.y, end_pos_x_axis.z)    
+    cylinder_end_y = Vector3(end_pos_y_axis.x, end_pos_y_axis.y + .5 * XYZ_SCALE, end_pos_y_axis.z)    
+    cylinder_end_z = Vector3(end_pos_z_axis.x, end_pos_z_axis.y, end_pos_z_axis.z + .5 * XYZ_SCALE)    
+
+    draw_cylinder_ex(end_pos_x_axis, cylinder_end_x, .1 * XYZ_SCALE, 0, 30 * XYZ_SCALE, get_color(0xFF3352ff))
+    draw_cylinder_ex(end_pos_y_axis, cylinder_end_y, .1 * XYZ_SCALE, 0, 30 * XYZ_SCALE, get_color(0x8BDC00ff))
+    draw_cylinder_ex(end_pos_z_axis, cylinder_end_z, .1 * XYZ_SCALE, 0, 30 * XYZ_SCALE, get_color(0x2890FFff))
 
     draw_line_3d(target, end_pos_x_axis, get_color(0xFF3352ff))
     draw_line_3d(target, end_pos_y_axis, get_color(0x8BDC00ff))

@@ -1,13 +1,14 @@
 from pyray import *  # type: ignore
-
+from utilz import *
 import math
+
 
 class Link:
     def __init__(self, pos: Vector3, length):
         self.start_pos = pos
         self.end_pos = Vector3(pos.x, pos.y + length, pos.z)
         self.length = length
-        self.color = get_color(0xffffff80)
+        self.color = get_color(0xffffff44)
 
     def render_link(self):
         scale = self.length * .1
@@ -31,7 +32,7 @@ class Link:
 
     def set_start_point(self, point: Vector3):
         self.start_pos = point
-        
+
     def get_angle(self):
         return math.atan2(self.end_pos.y, self.end_pos.z)
 
@@ -50,3 +51,11 @@ class Link:
 
         self.end_pos = vector3_add(self.start_pos, rotated)
 
+    def get_body_position(self) -> Matrix:
+        midpoint = get_midpoint(self.start_pos, self.end_pos)
+        rotation = get_rotation_between_points(self.start_pos, self.end_pos)
+
+        quat_to_matrix = quaternion_to_matrix(rotation)
+        vec_to_matrix = vector3_to_matrix(midpoint)
+
+        return matrix_multiply(quat_to_matrix, vec_to_matrix)

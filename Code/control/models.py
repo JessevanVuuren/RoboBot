@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from typing import Optional
+from link import Link
 from pyray import *  # type: ignore
 
 @dataclass
@@ -27,7 +29,12 @@ class XYZControl:
 
 
 @dataclass
-class RobotBody:
-    body: Mesh
+class RobotPart:
     name: str
+    body: Mesh
     material: Material
+    lock_rotation:Vector3 = Vector3(1,1,1)
+    lock_position:Vector3 = Vector3(1,1,1)
+    offset:Matrix = matrix_identity()
+    position:Matrix = matrix_identity()
+    link:Optional[Link] = None

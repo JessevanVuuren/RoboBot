@@ -10,6 +10,8 @@ uniform vec3 lightColor;
 void main() {
     // Normalize normal and light direction
     vec3 normal = normalize(fragNormal);
+
+
     vec3 lightDir = normalize(lightPosition - fragPosition);
 
     // Diffuse lighting calculation
@@ -17,7 +19,7 @@ void main() {
     
     // Calculate final color
     vec3 diffuse = diff * lightColor * fragColor;
-    vec3 ambient = 0.3 * fragColor;  // Simple ambient lighting
+    vec3 ambient = 0.2 * fragColor;  // Simple ambient lighting
     
     gl_FragColor = vec4(diffuse + ambient, 1.0);
 }
