@@ -21,12 +21,13 @@ init_window(WIDTH, HEIGHT, "RoBoBot")
 set_target_fps(60)
 
 camera_start_pos = Vector3(CAMERA_DISTANCE, CAMERA_DISTANCE, CAMERA_DISTANCE)
-camera = Camera3D(camera_start_pos, Vector3(0,50,0), Vector3(0, 1, 0), 30.0, CameraProjection.CAMERA_PERSPECTIVE)
+camera = Camera3D(camera_start_pos, Vector3(0, 50, 0), Vector3(0, 1, 0), 30.0, CameraProjection.CAMERA_PERSPECTIVE)
 
 SC = SerialCommunicator("COM8", 1000000, 1, ["INFO"])
 SC.start()
 
 xyz = init_xyz()
+
 
 def draw_grid():
     for x in range(0, GRID_AMOUNT):
@@ -56,7 +57,7 @@ def render():
         draw_line_3d(vector3_zero(), point_to_follow, get_color(0xFFFFFFFF))
 
         arm.render_bones()
-        arm.render_body(shader)
+        arm.render_body()
 
     with xyz_layer:
         draw_xyz_control(point_to_follow, xyz, camera)
@@ -91,12 +92,9 @@ point_to_follow = Vector3(0, 30, 50)
 # point_to_follow = Vector3(0, 180, 0)
 
 
-arm_length = 90
-origin_point = Vector3(0, 54.910, 0)
-# origin_point = Vector3(0, 0, 0)
+arm_length = 100.8
+origin_point = Vector3(0, 54.875, 0)
 arm = RobotArm2Link(origin_point, arm_length)
-value_the_minus = 0
-# value_the_minus = 18.160
 
 
 base = load_stl_mesh("../../3D_models/base", shader=shader.shader)
@@ -104,62 +102,70 @@ servo1 = load_stl_mesh("../../3D_models/servo", shader=shader.shader)
 rotate = load_stl_mesh("../../3D_models/rotate", shader=shader.shader)
 servo2 = load_stl_mesh("../../3D_models/servo", shader=shader.shader)
 boom1 = load_stl_mesh("../../3D_models/boom_simple", shader=shader.shader)
+servo3 = load_stl_mesh("../../3D_models/servo", shader=shader.shader)
+boom2 = load_stl_mesh("../../3D_models/boom_simple", shader=shader.shader)
 
 rotation = matrix_rotate_y(math.radians(180))
-pos = Vector3(-15-value_the_minus,20,-25.375)
+pos = Vector3(-15, 20, -25.375)
 offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
 base.offset = matrix_multiply(rotation, offset)
-base.lock_position = Vector3(0,0,0)
-base.lock_rotation = Vector3(0,0,0)
+base.lock_position = Vector3(0, 0, 0)
+base.lock_rotation = Vector3(0, 0, 0)
 base.link = arm.link1
 
 rotation = matrix_rotate_y(math.radians(0))
-pos = Vector3(-value_the_minus,1.8,-5.375)
+pos = Vector3(0, 1.8, -5.375)
 offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
 servo1.offset = matrix_multiply(rotation, offset)
-servo1.lock_position = Vector3(0,0,0)
-servo1.lock_rotation = Vector3(0,0,0)
+servo1.lock_position = Vector3(0, 0, 0)
+servo1.lock_rotation = Vector3(0, 0, 0)
 servo1.link = arm.link1
 
 rotation = matrix_rotate_y(math.radians(0))
-pos = Vector3(13-value_the_minus,33,5.375)
+pos = Vector3(13, 33, 5.375)
 offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
 rotate.offset = matrix_multiply(rotation, offset)
-rotate.lock_position = Vector3(0,0,0)
-rotate.lock_rotation = Vector3(0,1,0)
+rotate.lock_position = Vector3(0, 0, 0)
+rotate.lock_rotation = Vector3(0, 1, 0)
 rotate.link = arm.link1
 
 rotation = matrix_rotate_y(math.radians(90))
 rotation = matrix_multiply(rotation, matrix_rotate_z(math.radians(90)))
 rotation = matrix_multiply(rotation, matrix_rotate_y(math.radians(180)))
-pos = Vector3(-13.3-value_the_minus,49.5)
+pos = Vector3(-13.3, 49.5, 0)
 offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
 servo2.offset = matrix_multiply(rotation, offset)
-servo2.lock_position = Vector3(0,0,0)
-servo2.lock_rotation = Vector3(0,1,0)
+servo2.lock_position = Vector3(0, 0, 0)
+servo2.lock_rotation = Vector3(0, 1, 0)
 servo2.link = arm.link1
 
 rotation = matrix_rotate_z(math.radians(90))
-offset = matrix_translate(15,-45,6)
-# offset = matrix_translate(0,0,0)
+pos = Vector3(20, -(arm_length/2) - 6, 6)
+offset = vector3_to_matrix(pos)
 boom1.offset = matrix_multiply(rotation, offset)
-boom1.lock_position = Vector3(1,1,1)
-boom1.lock_rotation = Vector3(1,1,0)
 boom1.link = arm.link1
 
+rotation = matrix_rotate_y(math.radians(90))
+rotation = matrix_multiply(rotation, matrix_rotate_z(math.radians(90)))
+rotation = matrix_multiply(rotation, matrix_rotate_y(math.radians(180)))
+pos = Vector3(-2, 100, 0)
+offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
+servo3.offset = matrix_multiply(rotation, offset)
+servo3.link = arm.link1
 
-# rotation = matrix_rotate_z(math.radians(90))
-# offset = matrix_translate(10,-45,6)
-# boom2.offset = matrix_multiply(rotation, offset)
-# boom2.link = arm.link2
-
+rotation = matrix_rotate_z(math.radians(90))
+pos = Vector3(30, -(arm_length/2) - 6, 6)
+offset = vector3_to_matrix(pos)
+boom2.offset = matrix_multiply(rotation, offset)
+boom2.link = arm.link2
 
 arm.body_parts.append(base)
 arm.body_parts.append(servo1)
 arm.body_parts.append(rotate)
 arm.body_parts.append(servo2)
 arm.body_parts.append(boom1)
-# arm.body_parts.append(boom2)
+arm.body_parts.append(servo3)
+arm.body_parts.append(boom2)
 
 
 while not window_should_close():

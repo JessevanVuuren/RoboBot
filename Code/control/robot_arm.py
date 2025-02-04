@@ -13,7 +13,7 @@ class RobotArm2Link:
         self.link_length = link_length
         self.link1 = Link(base_pos, link_length)
         self.link2 = Link(self.link1.end_pos, link_length)
-        self.body_parts:list[RobotPart] = []
+        self.body_parts: list[RobotPart] = []
 
         self.yaw = 0
 
@@ -31,18 +31,17 @@ class RobotArm2Link:
 
         alpha = math.acos((distance**2 + self.link_length**2 - self.link_length**2) / (2 * distance * self.link_length))
         beta = math.acos((self.link_length**2 + self.link_length**2 - distance**2) / (2 * self.link_length * self.link_length))
-        yaw = math.atan2(point_to_follow.x, point_to_follow.z)
+        self.yaw = math.atan2(point_to_follow.x, point_to_follow.z)
 
         angle1 = base_angle + alpha
         angle2 = math.pi - beta
 
-        self.yaw = yaw
-
+        
         self.link1.set_angle_x(angle1)
-        self.link1.set_angle_y(-yaw)
+        self.link1.set_angle_y(-self.yaw)
         self.link2.set_start_point(self.link1.end_pos)
         self.link2.set_angle_x(angle1 - angle2)
-        self.link2.set_angle_y(-yaw)
+        self.link2.set_angle_y(-self.yaw)
 
     def render_bones(self):
         self.link1.render_link()
@@ -53,21 +52,22 @@ class RobotArm2Link:
             if (not part.link):
                 continue
 
-            anchor_point = part.link.get_body_position()
+            link_point = part.link.get_body_position()
 
-            anchor_point = matrix_multiply(anchor_point, matrix_rotate_y(self.yaw))
+            link_with_yaw = matrix_multiply(matrix_rotate_y(self.yaw), link_point)
 
-            anchor_point = lock_matrix_position(anchor_point, part.lock_position)
-            anchor_point = lock_matrix_rotation(anchor_point, part.lock_rotation)
+            position_lock = lock_matrix_position(link_with_yaw, part.lock_position)
+            rotation_lock = lock_matrix_rotation(position_lock, part.lock_rotation)
 
             origin = vector3_to_matrix(part.link.start_pos)
-            part_offset = matrix_multiply(part.offset, anchor_point)
+            part_offset = matrix_multiply(part.offset, rotation_lock)
             final_position = matrix_multiply(part_offset, origin)
-
 
             part.position = final_position
 
-    def render_body(self, shader: Optional[ShaderManager]):
+
+
+    def render_body(self, shader: Optional[ShaderManager] = None):
         for part in self.body_parts:
 
             if (shader):
