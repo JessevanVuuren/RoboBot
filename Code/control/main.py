@@ -87,10 +87,7 @@ shader.set_locs(ShaderLocationIndex.SHADER_LOC_MATRIX_PROJECTION, "projection")
 shader.set_vector3_value(vector3_zero(), "lightPosition")
 shader.set_vector3_value(vector3_one(), "lightColor")
 
-
 point_to_follow = Vector3(0, 30, 50)
-# point_to_follow = Vector3(0, 180, 0)
-
 
 arm_length = 100.8
 origin_point = Vector3(0, 54.875, 0)
@@ -210,10 +207,13 @@ while not window_should_close():
     arm.compute_ik(point_to_follow)
     arm.compute_body()
 
+    yaw = arm.yaw
     angle1 = math.degrees(arm.link1.get_angle())
     angle2 = math.degrees(arm.link2.get_angle())
 
-    data_to_write = str(180 - angle1) + "|" + str((angle1 - angle2) * 2) + "|"
+    print(yaw)
+
+    data_to_write = str(180 - angle1) + "|" + str((angle1 - angle2) * 2) + "|" 
 
     SC.write(data_to_write)
 

@@ -11,8 +11,8 @@ import math
 class RobotArm2Link:
     def __init__(self, base_pos: Vector3, link_length: float):
         self.link_length = link_length
-        self.link1 = Link(base_pos, link_length)
-        self.link2 = Link(self.link1.end_pos, link_length)
+        self.link1 = Link(base_pos, link_length, base_pos)
+        self.link2 = Link(self.link1.end_pos, link_length, base_pos)
         self.body_parts: list[RobotPart] = []
 
         self.yaw = 0
@@ -36,7 +36,6 @@ class RobotArm2Link:
         angle1 = base_angle + alpha
         angle2 = math.pi - beta
 
-        
         self.link1.set_angle_x(angle1)
         self.link1.set_angle_y(-self.yaw)
         self.link2.set_start_point(self.link1.end_pos)
@@ -64,8 +63,6 @@ class RobotArm2Link:
             final_position = matrix_multiply(part_offset, origin)
 
             part.position = final_position
-
-
 
     def render_body(self, shader: Optional[ShaderManager] = None):
         for part in self.body_parts:

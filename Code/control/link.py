@@ -1,14 +1,16 @@
+
 from pyray import *  # type: ignore
 from utilz import *
 import math
 
 
 class Link:
-    def __init__(self, pos: Vector3, length):
+    def __init__(self, pos: Vector3, length, base_pos):
         self.start_pos = pos
         self.end_pos = Vector3(pos.x, pos.y + length, pos.z)
         self.length = length
         self.color = get_color(0xffffff44)
+        self.base_pos = base_pos
 
     def render_link(self):
         scale = self.length * .1
@@ -34,7 +36,7 @@ class Link:
         self.start_pos = point
 
     def get_angle(self):
-        return math.atan2(self.end_pos.y, self.end_pos.z)
+        return math.atan2(self.end_pos.y - self.base_pos.y, self.end_pos.z)
 
     def set_angle_x(self, angle):
         y = self.start_pos.y + self.length * math.sin(angle)
