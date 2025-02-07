@@ -1,34 +1,36 @@
 #include <Servo.h>
 
+#define SERVOPIN0 3
 #define SERVOPIN1 6
 #define SERVOPIN2 5
 
 #define BAUD 1000000
 
-#define JOINTS 2
+#define ANLGES 3
 
-Servo servo1;
-Servo servo2;
+Servo rotation;
+Servo boom1;
+Servo boom2;
 
 void setup() {
+  pinMode(SERVOPIN0, OUTPUT);
   pinMode(SERVOPIN1, OUTPUT);
   pinMode(SERVOPIN2, OUTPUT);
   
-  servo1.attach(SERVOPIN1);
-  servo2.attach(SERVOPIN2);
+  rotation.attach(SERVOPIN0);
+  boom1.attach(SERVOPIN1);
+  boom2.attach(SERVOPIN2);
+  
   Serial.begin(BAUD);
   Serial.setTimeout(1); 
-
-  servo1.write(servo1.read());
-  servo2.write(servo2.read());
 }
 
 int* angles_list(String dataIn) {
-  static int array[JOINTS];
+  static int array[ANLGES];
 
   int index = 0;
   int offset = 0;
-  for (int i = 0; i < JOINTS; i++) {
+  for (int i = 0; i < ANLGES; i++) {
     index = dataIn.indexOf('|', offset);
     if (index >= 0) {
       String value = dataIn.substring(offset, index);
@@ -52,9 +54,12 @@ void loop() {
     Serial.print("Angle1: ");
     Serial.print(angles[0]);
     Serial.print(", Angle2: ");
-    Serial.println(angles[1]);
+    Serial.print(angles[1]);
+    Serial.print(", Angle3: ");
+    Serial.println(angles[2]);
 
-    servo1.write(angles[0]);
-    servo2.write(angles[1]);
+    rotation.write(angles[0]);
+    boom1.write(angles[1]);
+    boom2.write(angles[2]);
   }
 }

@@ -1,10 +1,10 @@
-from serialCom import SerialCommunicator
+from serial_com import SerialCommunicator
 from robot_arm import RobotArm2Link
 from link import Link
 
 from xyz_control import *  # type: ignore
+from read_robot import *  # type: ignore
 from rcamera import *  # type: ignore
-from read_stl import *  # type: ignore
 from render import *  # type: ignore
 from utilz import *  # type: ignore
 from pyray import *  # type: ignore
@@ -88,81 +88,10 @@ shader.set_vector3_value(vector3_zero(), "lightPosition")
 shader.set_vector3_value(vector3_one(), "lightColor")
 
 point_to_follow = Vector3(0, 30, 50)
+# point_to_follow = Vector3(0, 300, 0)
 
-arm_length = 100.8
-origin_point = Vector3(0, 54.875, 0)
-arm = RobotArm2Link(origin_point, arm_length)
-
-
-base = load_stl_mesh("../../3D_models/base", shader=shader.shader)
-servo1 = load_stl_mesh("../../3D_models/servo", shader=shader.shader)
-rotate = load_stl_mesh("../../3D_models/rotate", shader=shader.shader)
-servo2 = load_stl_mesh("../../3D_models/servo", shader=shader.shader)
-boom1 = load_stl_mesh("../../3D_models/boom_simple", shader=shader.shader)
-servo3 = load_stl_mesh("../../3D_models/servo", shader=shader.shader)
-boom2 = load_stl_mesh("../../3D_models/boom_simple", shader=shader.shader)
-
-rotation = matrix_rotate_y(math.radians(180))
-pos = Vector3(-15, 20, -25.375)
-offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
-base.offset = matrix_multiply(rotation, offset)
-base.lock_position = Vector3(0, 0, 0)
-base.lock_rotation = Vector3(0, 0, 0)
-base.link = arm.link1
-
-rotation = matrix_rotate_y(math.radians(0))
-pos = Vector3(0, 1.8, -5.375)
-offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
-servo1.offset = matrix_multiply(rotation, offset)
-servo1.lock_position = Vector3(0, 0, 0)
-servo1.lock_rotation = Vector3(0, 0, 0)
-servo1.link = arm.link1
-
-rotation = matrix_rotate_y(math.radians(0))
-pos = Vector3(13, 33, 5.375)
-offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
-rotate.offset = matrix_multiply(rotation, offset)
-rotate.lock_position = Vector3(0, 0, 0)
-rotate.lock_rotation = Vector3(0, 1, 0)
-rotate.link = arm.link1
-
-rotation = matrix_rotate_y(math.radians(90))
-rotation = matrix_multiply(rotation, matrix_rotate_z(math.radians(90)))
-rotation = matrix_multiply(rotation, matrix_rotate_y(math.radians(180)))
-pos = Vector3(-13.3, 49.5, 0)
-offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
-servo2.offset = matrix_multiply(rotation, offset)
-servo2.lock_position = Vector3(0, 0, 0)
-servo2.lock_rotation = Vector3(0, 1, 0)
-servo2.link = arm.link1
-
-rotation = matrix_rotate_z(math.radians(90))
-pos = Vector3(20, -(arm_length/2) - 6, 6)
-offset = vector3_to_matrix(pos)
-boom1.offset = matrix_multiply(rotation, offset)
-boom1.link = arm.link1
-
-rotation = matrix_rotate_y(math.radians(90))
-rotation = matrix_multiply(rotation, matrix_rotate_z(math.radians(90)))
-rotation = matrix_multiply(rotation, matrix_rotate_y(math.radians(180)))
-pos = Vector3(-2, 100, 0)
-offset = vector3_to_matrix(vector3_subtract(pos, origin_point))
-servo3.offset = matrix_multiply(rotation, offset)
-servo3.link = arm.link1
-
-rotation = matrix_rotate_z(math.radians(90))
-pos = Vector3(30, -(arm_length/2) - 6, 6)
-offset = vector3_to_matrix(pos)
-boom2.offset = matrix_multiply(rotation, offset)
-boom2.link = arm.link2
-
-arm.body_parts.append(base)
-arm.body_parts.append(servo1)
-arm.body_parts.append(rotate)
-arm.body_parts.append(servo2)
-arm.body_parts.append(boom1)
-arm.body_parts.append(servo3)
-arm.body_parts.append(boom2)
+robot = load_robot("../../robots/ServoBot", shader.shader)
+arm = RobotArm2Link(robot)
 
 
 while not window_should_close():
@@ -207,14 +136,13 @@ while not window_should_close():
     arm.compute_ik(point_to_follow)
     arm.compute_body()
 
-    yaw = arm.yaw
-    angle1 = math.degrees(arm.link1.get_angle())
-    angle2 = math.degrees(arm.link2.get_angle())
+    yaw = round(math.degrees(arm.yaw))
+    angle1 = round(math.degrees(arm.angle1))
+    angle2 = round(math.degrees(arm.angle2))
 
-    print(yaw)
+    data_to_write = str(yaw + 90) + "|" + str(180 - angle1) + "|" + str(angle2) + "|"
 
-    data_to_write = str(180 - angle1) + "|" + str((angle1 - angle2) * 2) + "|" 
-
+    print(data_to_write)
     SC.write(data_to_write)
 
     render()

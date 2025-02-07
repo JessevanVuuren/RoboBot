@@ -1,0 +1,70 @@
+
+
+
+name: "ServoBot"
+arm_length: 100.8
+origin_point: [0, 54.875, 0]
+
+parts:
+  - part:
+    type: "body"
+    name: "base"
+    rotation: [0, 180, 0]
+    position: [-15, 20, -25.375]
+    lock_position: [1, 1, 1]
+    lock_rotation: [1, 1, 1]
+    link: 0
+
+  - part:
+    type: "body"
+    name: "servo"
+    rotation: [0, 0, 0]
+    position: [0, 1.8, -5.375]
+    lock_position: [1, 1, 1]
+    lock_rotation: [1, 1, 1]
+    link: 0
+
+  - part:
+    type: "body"
+    name: "rotate"
+    rotation: [0, 0, 0]
+    position: [13, 33, 5.375]
+    lock_position: [1, 1, 1]
+    lock_rotation: [1, 0, 1]
+    link: 0
+
+  - part:
+    type: "body"
+    name: "servo"
+    rotation: [-90, 0, -90]
+    position: [-13.3, 49.5, 0]
+    lock_position: [1, 1, 1]
+    lock_rotation: [1, 0, 1]
+    link: 0
+
+  - part:
+    type: "boom"
+    name: "boom_simple"
+    rotation: [0, 0, 90]
+    position: [20, -6, 6]
+    lock_position: [0, 0, 0]
+    lock_rotation: [0, 0, 0]
+    link: 0
+
+  - part:
+    type: "body"
+    name: "servo"
+    rotation: [-90, 0, -90]
+    position: [-2, 100, 0]
+    lock_position: [0, 0, 0]
+    lock_rotation: [0, 0, 0]
+    link: 0
+
+  - part:
+    type: "boom"
+    name: "boom_simple"
+    rotation: [0, 0, 90]
+    position: [30, -6, 6]
+    lock_position: [0, 0, 0]
+    lock_rotation: [0, 0, 0]
+    link: 1

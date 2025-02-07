@@ -72,7 +72,8 @@ class SerialCommunicator(threading.Thread):
             try:
                 self._connector.write((data + '\n').encode())
                 if (self._connector.in_waiting > 0):
-                    _ = self._connector.read_until(b'\n').decode().strip()
+                    read = self._connector.read_until(b'\n').decode().strip()
+                    # print(read)
             except serial.SerialException as e:
                 print(e)
                 self._logger.warning("Writing to serial failed")

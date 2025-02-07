@@ -1,6 +1,7 @@
 from pyray import *  # type: ignore
 import math
 
+DEGREES_TO_RADIANS = 0.0174532925
 
 def print_vec(v):
     print(v.x, v.y, v.z)
@@ -55,3 +56,13 @@ def lock_matrix_rotation(final_position, lock):
     return matrix_multiply(quaternion_to_matrix(rotation), vector3_to_matrix(position))
     
 
+def yaml_to_vector3(v) -> Vector3:
+    return Vector3(v[0], v[1], v[2])
+
+
+def vector3_to_radians(v: Vector3) -> Vector3:
+    return vector3_scale(v, DEGREES_TO_RADIANS)
+
+
+def vector3_bitwise(v:Vector3):
+    return Vector3(int(v.x) ^ 1, int(v.y) ^ 1, int(v.x) ^ 1)
