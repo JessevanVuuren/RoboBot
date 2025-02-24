@@ -142,7 +142,6 @@ while not window_should_close():
 
     data_to_write = str(yaw + 90) + "|" + str(180 - angle1) + "|" + str(angle2) + "|"
 
-    print(data_to_write)
     SC.write(data_to_write)
 
     render()
