@@ -1,6 +1,6 @@
 #include "StepDriver.h"
 
-StepDriver::StepDriver(Stepsize step, int dir_pin, int step_pin) {
+StepDriver::StepDriver(Stepsize step, int dir_pin, int step_pin, float gearbox_ratio) {
     pinMode(dir_pin, OUTPUT);
     pinMode(step_pin, OUTPUT);
 
@@ -26,6 +26,7 @@ StepDriver::StepDriver(Stepsize step, int dir_pin, int step_pin) {
     _last_step_time = 0;
     _step_interval = 0;
 
+    _gearbox_ratio = gearbox_ratio;
     _angle = 0;
 }
 
@@ -34,6 +35,10 @@ void StepDriver::set_speed(int rpm) {
     float second_per_step = (1 / steps_per_sec);
 
     _step_interval = second_per_step * 1000000;
+}
+
+void StepDriver::set_angle(float degrees) {
+    _angle = degrees;
 }
 
 void StepDriver::run() {
@@ -85,7 +90,9 @@ void StepDriver::run_blocked() {
 }
 
 void StepDriver::next_angle(float degrees) {
-    float steps = degrees_to_steps(degrees, _step);
+    float steps = degrees_to_steps(degrees);
+    
+    steps *= _gearbox_ratio;
     _recalculate_ramp(steps);
 
     _target_position += steps;
@@ -93,19 +100,22 @@ void StepDriver::next_angle(float degrees) {
 }
 
 void StepDriver::absolute_angle(float degrees) {
-    float steps = degrees_to_steps(degrees, _step);
-    _recalculate_ramp(steps);
+    float delta = degrees - _angle;
 
-    _target_position = steps;
-    _angle = degrees;
+    if (delta > 0 && _angle > degrees) delta -= FULL_CIRCLE;
+    if (delta < 0 && degrees > _angle) delta += FULL_CIRCLE;
+
+    next_angle(delta);
 }
 
 void StepDriver::next_step(int steps) {
+    steps *= _gearbox_ratio;
     _recalculate_ramp(steps);
     _target_position += steps;
 }
 
 void StepDriver::absolute_step(int steps) {
+    steps *= _gearbox_ratio;
     _recalculate_ramp(steps);
     _target_position = steps;
 }
@@ -135,7 +145,7 @@ void StepDriver::_recalculate_ramp(int steps) {
 
 void StepDriver::set_direction(bool direction) {
     _direction = direction;
-    digitalWrite(_dir_pin, !direction);
+    digitalWrite(_dir_pin, direction);
 }
 
 
