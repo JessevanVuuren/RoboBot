@@ -43,10 +43,10 @@ class StepDriver {
 
     float get_interval() { return _step_interval; };
     float get_angle() { return _angle; };
-    int get_position() { return _current_position; };
-    int get_target() { return _target_position; };
-    int degrees_to_target() { return steps_to_degrees(abs(_current_position - _target_position)) };
-    int steps_to_target() { return abs(_current_position - _target_position); };
+    long get_position() { return _current_position; };
+    long get_target() { return _target_position; };
+    float degrees_to_target() { return steps_to_degrees(abs(_current_position - _target_position)) };
+    long steps_to_target() { return abs(_current_position - _target_position); };
 
     void set_speed(int);
     void set_angle(float);
@@ -76,8 +76,8 @@ class StepDriver {
     
     int _dir_pin;
     int _step_pin;
-    int _target_position;
-    int _current_position;
+    long _target_position;
+    long _current_position;
     
     float _angle;
     float _gearbox_ratio;
