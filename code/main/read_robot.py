@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Optional
-from cffi import FFI
+# from cffi import FFI
 from models import *  # type: ignore
 from pyray import *  # type: ignore
 from utilz import *

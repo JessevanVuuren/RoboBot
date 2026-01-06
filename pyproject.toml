@@ -1,0 +1,12 @@
+[project]
+name = "robobot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "loguru>=0.7.3",
+    "pyserial>=3.5",
+    "pyyaml>=6.0.3",
+    "raylib>=5.5.0.4",
+]
