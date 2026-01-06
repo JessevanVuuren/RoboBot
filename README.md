@@ -55,6 +55,6 @@ python ./main.py
 ```
 
 ## Screenshots
-![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/imgs/img1.PNG?raw=true)
+![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/img/img1.png?raw=true)
 
-![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/imgs/img2.PNG?raw=true)
+![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/img/img1.png?raw=true)
