@@ -57,4 +57,4 @@ python ./main.py
 ## Screenshots
 ![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/img/img1.png?raw=true)
 
-![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/img/img1.png?raw=true)
+![img lenna](https://github.com/JessevanVuuren/RoboBot/blob/master/img/img2.png?raw=true)
